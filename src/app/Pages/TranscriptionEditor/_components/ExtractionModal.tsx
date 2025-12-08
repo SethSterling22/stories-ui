@@ -196,6 +196,13 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
           <p className="mt-2 text-sm text-gray-500">
             Add notes, observations, or any relevant information about this transcription segment.
             (The extracted locations may contain errors and should be reviewed.)
+            {isLoading ? 
+            <>
+              <br></br>
+              <br></br> 
+            <span className="text-sm text-yellow-600 font-medium">
+              The extraction process can take up to 30 seconds...</span> 
+            </>: ''}
           </p>
         </div>
 
