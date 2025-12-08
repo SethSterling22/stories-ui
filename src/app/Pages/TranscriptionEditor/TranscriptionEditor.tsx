@@ -11,7 +11,8 @@ import { useStory } from '../../Stories/StoryContext';
 import { useUpdateResource } from '../../../hooks/ckan/resources/useUpdateResource';
 import useAccessToken from '../../../hooks/auth/useAccessToken';
 import { splitTextIntelligently } from '../../../utils/textSplitting';
-import { Sidebar, Editor, AnnotationModal } from './_components';
+// import { Sidebar, Editor, AnnotationModal } from './_components';
+import { Sidebar, Editor, ExtractionModal } from './_components';
 import { Loading } from '../../common/Loading';
 
 const TranscriptionEditor: React.FC = () => {
@@ -514,7 +515,7 @@ const TranscriptionEditor: React.FC = () => {
       </div>
 
       {/* Annotation Modal */}
-      <AnnotationModal
+      <ExtractionModal
         isOpen={isAnnotationModalOpen}
         onClose={handleCloseAnnotationModal}
         segment={currentAnnotationSegment}
