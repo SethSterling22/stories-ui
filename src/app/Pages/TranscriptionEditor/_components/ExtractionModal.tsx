@@ -14,6 +14,7 @@ interface AnnotationModalProps {
   onClose: () => void;
   segment: TranscriptionSegment | null;
   onSave: (annotation: string) => void;
+  access_token: string | null;
 }
 
 const ExtractionModal: React.FC<AnnotationModalProps> = ({
@@ -21,6 +22,7 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
   onClose,
   segment,
   onSave,
+  access_token,
 }) => {
   const [annotation, setAnnotation] = useState('');
   // State to handle the charge during the Agent call
@@ -46,6 +48,13 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
   const extractLocations = async () => {
     if (!segment || !segment.text) return;
 
+    // 🛑 REFUERZO: Verifica que la variable existe Y que no es una cadena vacía.
+    if (!access_token || access_token.trim() === '') {
+      setError("Authorization token is missing or empty. Cannot contact n8n.");
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -54,6 +63,8 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Send Access Token
+          'Authorization': `Bearer ${access_token}`, 
         },
         // Send segment text
         body: JSON.stringify({ 
@@ -62,9 +73,21 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
       });
 
       if (!response.ok) {
-        // HTTP errors management
-        const errorText = await response.text();
-        throw new Error(`HTTP Error ${response.status}: ${errorText.substring(0, 100)}...`);
+        // Mejorar la gestión de errores HTTP:
+        // Intentar leer el cuerpo como JSON primero (si n8n devuelve un error 401/500 estructurado)
+        // y si falla, usar el texto plano.
+        let errorMessage = `HTTP Error ${response.status}: `;
+        try {
+            const errorJson = await response.json();
+            // Asumimos que el error JSON tiene un campo 'message' o 'error'
+            errorMessage += errorJson.error || errorJson.message || 'Server returned an unhandled error.';
+        } catch {
+            // Si falla el parseo de JSON (cuerpo vacío o HTML/texto), usamos el texto crudo.
+            const errorText = await response.text();
+            errorMessage += errorText.substring(0, 100) + '...';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       // Receive JSON from the Agent

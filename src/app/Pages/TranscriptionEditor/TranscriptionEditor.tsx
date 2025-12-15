@@ -21,9 +21,11 @@ const TranscriptionEditor: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { resources } = useStory();
+  const [access_token, _setToken] = useState(localStorage.getItem('access_toen') || null); // Token for Authenticate Agent
   const [resource, setResource] = useState<Resource | null | undefined>(
     undefined,
   );
+
   useEffect(() => {
     const resource = resources.find((r) => r.id === resourceId);
     if (resource) {
@@ -514,12 +516,13 @@ const TranscriptionEditor: React.FC = () => {
         </div>
       </div>
 
-      {/* Annotation Modal */}
+      {/* Annotation Modal was replaced by Extraction Modal */}
       <ExtractionModal
         isOpen={isAnnotationModalOpen}
         onClose={handleCloseAnnotationModal}
         segment={currentAnnotationSegment}
         onSave={handleSaveAnnotation}
+        access_token={access_token} // Send Token value for the Agent
       />
     </div>
   );
