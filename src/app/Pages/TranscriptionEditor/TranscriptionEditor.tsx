@@ -21,7 +21,7 @@ const TranscriptionEditor: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { resources } = useStory();
-  const [access_token, _setToken] = useState(localStorage.getItem('access_toen') || null); // Token for Authenticate Agent
+  const [access_token, _setToken] = useState(localStorage.getItem('access_token') || null); // Token for Authenticate Agent
   const [resource, setResource] = useState<Resource | null | undefined>(
     undefined,
   );
