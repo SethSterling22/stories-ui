@@ -130,7 +130,7 @@ const Editor: React.FC<EditorProps> = ({
                         >
                           <FiScissors className="w-4 h-4" />
                         </button>
-                        <button
+                        {/* <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onAnnotateSegment(index);
@@ -142,7 +142,7 @@ const Editor: React.FC<EditorProps> = ({
                           title={hasAnnotation ? "Edit annotation" : "Add annotation"}
                         >
                           <FiMessageSquare className="w-4 h-4" />
-                        </button>
+                        </button> */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
