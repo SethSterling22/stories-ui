@@ -3,6 +3,16 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
+
+# Declare arguments for build
+ARG VITE_TAPIS_API_BASE_URL
+ARG VITE_CKAN_BASE_URL
+ARG VITE_DYNAMO_API_BASE_URL
+ARG VITE_DYNAMO_DASHBOARD_URL
+ARG VITE_MAX_FILE_SIZE
+ARG VITE_N8N_WEBHOOK_URL
+
+
 # Copy package files
 COPY package*.json ./
 
