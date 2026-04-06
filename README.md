@@ -111,6 +111,8 @@ npm run dev
 | --------------------------- | --------------------------- | ----------------------------------- |
 | `VITE_DYNAMO_API_BASE_URL`  | DYNAMO Ensemble Manager API | `http://localhost:3000/v1`          |
 | `VITE_DYNAMO_DASHBOARD_URL` | DYNAMO Dashboard URL        | `https://dashboard.dynamo.mint.edu` |
+| `VITE_N8N_WEBHOOK_URL`      | N8N Webhook for Extraction  | (Depends on the N8N webhook)        |
+
 
 **Note**: The build process validates required environment variables and will fail if they are missing.
 
