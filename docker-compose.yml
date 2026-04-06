@@ -21,3 +21,4 @@ services:
       - VITE_N8N_WEBHOOK_URL=${VITE_N8N_WEBHOOK_URL}
 
 # VITE_N8N_WEBHOOK_URL="https://n8n.com/webhook" docker compose up --build
+# Must have a .env file, so you can do: "cp .env.production .env"
