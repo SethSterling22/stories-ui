@@ -20,5 +20,6 @@ services:
       - VITE_MAX_FILE_SIZE=${VITE_MAX_FILE_SIZE}
       - VITE_N8N_WEBHOOK_URL=${VITE_N8N_WEBHOOK_URL}
 
-# VITE_N8N_WEBHOOK_URL="https://n8n.com/webhook" docker compose up --build
+# VITE_N8N_WEBHOOK_URL="https://n8n.com/webhook"
 # Must have a .env file, so you can do: "cp .env.production .env"
+# sudo docker compose up --build  --force-recreate
