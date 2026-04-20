@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     //////////////////////////
     // Debugging purposes
-    // server: {
+     server: {
     allowedHosts: [
     'storiesuiextraction.pods.portals.tapis.io/',
        ],
