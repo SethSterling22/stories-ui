@@ -31,8 +31,7 @@ export default defineConfig(({ mode }) => {
     // Debugging purposes
     server: {
       allowedHosts: [
-        '100.73.210.107',
-        'sram.stegosaurus-panga.ts.net'
+      'storiesuiextraction.pods.portals.tapis.io',
       ],
     },
     //////////////////////////
