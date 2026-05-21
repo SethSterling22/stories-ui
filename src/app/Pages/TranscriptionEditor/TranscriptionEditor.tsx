@@ -98,32 +98,37 @@ const TranscriptionEditor: React.FC = () => {
         return;
       }
 
-      // FIX: Convert the absolute CKAN URL into a relative proxy path to bypass CORS restrictions
+      // Convert the absolute CKAN URL into a relative proxy path to bypass CORS restrictions
       const patchedUrl = resource.url.replace('https://ckan.tacc.utexas.edu', '/api-ckan');
+
+      let response: Response;
 
       if (resource.url.includes('ckan.tacc.utexas.edu')) {
         headers['Authorization'] = `Bearer ${accessToken}`;
-        // CHANGED: Fetch from patchedUrl instead of resource.url
-        const response = await fetch(patchedUrl, {
+        response = await fetch(patchedUrl, {
           method: 'GET',
           headers,
         });
-        if (!response.ok) {
-          throw new Error(
-            `Failed to load transcription: ${response.statusText}`,
-          );
-        }
-        data = await response.json();
       } else {
-        // CHANGED: Fetch from patchedUrl instead of resource.url
-        const response = await fetch(patchedUrl);
-        if (!response.ok) {
-          throw new Error(
-            `Failed to load transcription: ${response.statusText}`,
-          );
-        }
-        data = await response.json();
+        response = await fetch(patchedUrl);
       }
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load transcription: ${response.statusText}`,
+        );
+      }
+
+      // FIX: Read response as raw text first to clean up malformed control characters
+      const rawText = await response.text();
+
+      // Regex matches content inside double quotes and safely escapes literal newlines
+      const cleanedText = rawText.replace(/"(\\.|[^"\\])*"/g, (match) => {
+        return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+      });
+
+      // Parse the safely sanitized JSON string
+      data = JSON.parse(cleanedText);
 
       // Convert speakers to segments for easier editing
       const segments: TranscriptionSegment[] = data.speakers.map((speaker) => ({
@@ -143,7 +148,6 @@ const TranscriptionEditor: React.FC = () => {
       setIsLoadingTranscription(false);
     }
   }, [resource, accessToken]);
-
 
 
 
