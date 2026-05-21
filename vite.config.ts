@@ -29,11 +29,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     //////////////////////////
     // Debugging purposes
-    // server: {
-    //   allowedHosts: [
-    //     '100.73.210.107',
-    //   ],
-    // },
+    server: {
+      allowedHosts: [
+        '100.73.210.107',
+        'sram.stegosaurus-panga.ts.net'
+      ],
+    },
     //////////////////////////
   };
 });
