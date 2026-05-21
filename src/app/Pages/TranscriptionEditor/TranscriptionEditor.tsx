@@ -118,31 +118,32 @@ const TranscriptionEditor: React.FC = () => {
         );
       }
 
-      // Read response as raw text to fix structural issues
+      // Read response as raw text first to handle potential formatting glitches
       const rawText = (await response.text()).trim();
 
-      // 1. FIX: Escape literal newlines inside double quotes
+      // 1. CLEANUP: Escape literal newlines inside double quotes safely
       const cleanedText = rawText.replace(/"(\\.|[^"\\])*"/g, (match) => {
         return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
       });
 
-      // 2. FIX: Wrap comma-separated objects in array brackets if they are missing
+      // 2. DETECT & PATCH: Only wrap in array brackets if it's an unbracketed stream of objects
       let finalizedText = cleanedText;
-      if (finalizedText.startsWith('{') && !finalizedText.startsWith('[') && finalizedText.includes('},')) {
+      if (finalizedText.startsWith('{') && !finalizedText.includes('"speakers":')) {
+        // It's the malformed stream case, safe to wrap
         finalizedText = `[${finalizedText}]`;
       }
 
-      // Parse the safely sanitized JSON structure
+      // Parse the safely sanitized JSON string
       const parsedData = JSON.parse(finalizedText);
       let rawSpeakers: any[] = [];
 
-      // 3. FIX: Handle both standard object structures and raw array streams
-      if (Array.isArray(parsedData)) {
-        // Filter out metadata objects (like {"title": "Jr"}) and keep only valid speaker segments
-        rawSpeakers = parsedData.filter(item => item && item.speaker && item.timestamp);
-      } else if (parsedData && parsedData.speakers) {
-        // Default fallback to standard structure
+      // 3. EXTRACTION: Route data correctly based on its verified shape
+      if (parsedData && parsedData.speakers && Array.isArray(parsedData.speakers)) {
+        // Case A: Perfectly formatted standard JSON object
         rawSpeakers = parsedData.speakers;
+      } else if (Array.isArray(parsedData)) {
+        // Case B: Stream of objects wrapped in brackets (and filters metadata out)
+        rawSpeakers = parsedData.filter(item => item && item.speaker && item.timestamp);
       } else {
         throw new Error("Invalid transcription format: could not locate speaker segments.");
       }
