@@ -34,24 +34,23 @@ const Callback: React.FC = () => {
 
       // CASO B: Ya estamos en el entorno correcto (Local o Producción)
       try {
-        // Guardamos en LocalStorage. Al recargar, tu AuthContext leerá esto automáticamente
+        // Guardamos en LocalStorage.
         localStorage.setItem('tapis-token', token);
         localStorage.setItem('token', token);
 
-        console.log("Sesión guardada en LocalStorage. Reiniciando aplicación...");
+        console.log("¡Token guardado con éxito! Hemos congelado la redirección para que revises.");
         
         // Limpiamos la bandera del origen de sesión
         sessionStorage.removeItem('oauth_original_origin');
 
-        // Redireccionamos a la raíz. Esto desmonta React y fuerza al AuthContext a leer el nuevo token
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 300);
+        // COMENTAMOS EL REDIRECCIONAMIENTO AUTOMÁTICO PARA DEBUGGEAR
+        // setTimeout(() => { window.location.href = '/'; }, 300);
 
       } catch (error: any) {
         console.error("Error al guardar las credenciales:", error);
         setErrorLog(`Error al guardar en almacenamiento local: ${error.message || error}`);
       }
+
     } else {
       console.error("No se encontró el parámetro access_token en la URL:", url);
       setErrorLog("La respuesta de TACC no contenía un token válido. Revisa los logs de la consola.");
@@ -87,3 +86,4 @@ const Callback: React.FC = () => {
 };
 
 export default Callback;
+
