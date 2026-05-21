@@ -92,7 +92,6 @@ const TranscriptionEditor: React.FC = () => {
     try {
       // Check if URL is from CKAN TACC and add auth headers
       const headers: HeadersInit = {};
-      let data: TranscriptionData;
       if (!accessToken) {
         setTranscriptionError('Authentication token is required');
         return;
@@ -119,23 +118,41 @@ const TranscriptionEditor: React.FC = () => {
         );
       }
 
-      // FIX: Read response as raw text first to clean up malformed control characters
-      const rawText = await response.text();
+      // Read response as raw text to fix structural issues
+      const rawText = (await response.text()).trim();
 
-      // Regex matches content inside double quotes and safely escapes literal newlines
+      // 1. FIX: Escape literal newlines inside double quotes
       const cleanedText = rawText.replace(/"(\\.|[^"\\])*"/g, (match) => {
         return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
       });
 
-      // Parse the safely sanitized JSON string
-      data = JSON.parse(cleanedText);
+      // 2. FIX: Wrap comma-separated objects in array brackets if they are missing
+      let finalizedText = cleanedText;
+      if (finalizedText.startsWith('{') && !finalizedText.startsWith('[') && finalizedText.includes('},')) {
+        finalizedText = `[${finalizedText}]`;
+      }
+
+      // Parse the safely sanitized JSON structure
+      const parsedData = JSON.parse(finalizedText);
+      let rawSpeakers: any[] = [];
+
+      // 3. FIX: Handle both standard object structures and raw array streams
+      if (Array.isArray(parsedData)) {
+        // Filter out metadata objects (like {"title": "Jr"}) and keep only valid speaker segments
+        rawSpeakers = parsedData.filter(item => item && item.speaker && item.timestamp);
+      } else if (parsedData && parsedData.speakers) {
+        // Default fallback to standard structure
+        rawSpeakers = parsedData.speakers;
+      } else {
+        throw new Error("Invalid transcription format: could not locate speaker segments.");
+      }
 
       // Convert speakers to segments for easier editing
-      const segments: TranscriptionSegment[] = data.speakers.map((speaker) => ({
+      const segments: TranscriptionSegment[] = rawSpeakers.map((speaker) => ({
         speaker: speaker.speaker,
         timestamp: speaker.timestamp,
         text: speaker.text,
-        annotation: (speaker as TranscriptionSegment).annotation, // Preserve annotation if it exists
+        annotation: speaker.annotation, // Preserve annotation if it exists
       }));
       setSegments(segments);
     } catch (error) {
@@ -148,7 +165,6 @@ const TranscriptionEditor: React.FC = () => {
       setIsLoadingTranscription(false);
     }
   }, [resource, accessToken]);
-
 
 
   // // Load transcription data
