@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import React from 'react';
+
 
 // const Login: React.FC = () => {
 //   const { login, isLoading, error } = useAuth();
