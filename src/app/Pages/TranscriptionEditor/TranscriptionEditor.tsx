@@ -82,7 +82,7 @@ const TranscriptionEditor: React.FC = () => {
     return null;
   }, [selectedMediaResource]);
 
-  // Load transcription data
+// Load transcription data
   const fetchTranscriptionData = useCallback(async () => {
     if (!resource) return;
 
@@ -97,9 +97,14 @@ const TranscriptionEditor: React.FC = () => {
         setTranscriptionError('Authentication token is required');
         return;
       }
+
+      // FIX: Convert the absolute CKAN URL into a relative proxy path to bypass CORS restrictions
+      const patchedUrl = resource.url.replace('https://ckan.tacc.utexas.edu', '/api-ckan');
+
       if (resource.url.includes('ckan.tacc.utexas.edu')) {
         headers['Authorization'] = `Bearer ${accessToken}`;
-        const response = await fetch(resource.url, {
+        // CHANGED: Fetch from patchedUrl instead of resource.url
+        const response = await fetch(patchedUrl, {
           method: 'GET',
           headers,
         });
@@ -110,7 +115,8 @@ const TranscriptionEditor: React.FC = () => {
         }
         data = await response.json();
       } else {
-        const response = await fetch(resource.url);
+        // CHANGED: Fetch from patchedUrl instead of resource.url
+        const response = await fetch(patchedUrl);
         if (!response.ok) {
           throw new Error(
             `Failed to load transcription: ${response.statusText}`,
@@ -137,6 +143,65 @@ const TranscriptionEditor: React.FC = () => {
       setIsLoadingTranscription(false);
     }
   }, [resource, accessToken]);
+
+
+
+
+  // // Load transcription data
+  // const fetchTranscriptionData = useCallback(async () => {
+  //   if (!resource) return;
+
+  //   setIsLoadingTranscription(true);
+  //   setTranscriptionError(null);
+
+  //   try {
+  //     // Check if URL is from CKAN TACC and add auth headers
+  //     const headers: HeadersInit = {};
+  //     let data: TranscriptionData;
+  //     if (!accessToken) {
+  //       setTranscriptionError('Authentication token is required');
+  //       return;
+  //     }
+  //     if (resource.url.includes('ckan.tacc.utexas.edu')) {
+  //       headers['Authorization'] = `Bearer ${accessToken}`;
+  //       const response = await fetch(resource.url, {
+  //         method: 'GET',
+  //         headers,
+  //       });
+  //       if (!response.ok) {
+  //         throw new Error(
+  //           `Failed to load transcription: ${response.statusText}`,
+  //         );
+  //       }
+  //       data = await response.json();
+  //     } else {
+  //       const response = await fetch(resource.url);
+  //       if (!response.ok) {
+  //         throw new Error(
+  //           `Failed to load transcription: ${response.statusText}`,
+  //         );
+  //       }
+  //       data = await response.json();
+  //     }
+
+  //     // Convert speakers to segments for easier editing
+  //     const segments: TranscriptionSegment[] = data.speakers.map((speaker) => ({
+  //       speaker: speaker.speaker,
+  //       timestamp: speaker.timestamp,
+  //       text: speaker.text,
+  //       annotation: (speaker as TranscriptionSegment).annotation, // Preserve annotation if it exists
+  //     }));
+  //     setSegments(segments);
+  //   } catch (error) {
+  //     const errorMessage =
+  //       error instanceof Error
+  //         ? error.message
+  //         : 'Failed to load transcription data';
+  //     setTranscriptionError(errorMessage);
+  //   } finally {
+  //     setIsLoadingTranscription(false);
+  //   }
+  // }, [resource, accessToken]);
 
   useEffect(() => {
     if (resource) {
