@@ -7,7 +7,7 @@ export const getTaccOauthUrl = (basePath: string): string => {
   const clientId = import.meta.env.VITE_OAUTH_CLIENT_ID || 'stories-ui-client';
   
   // El callback registrado en TACC siempre debe ser el oficial de producción
-  const redirectUri = 'https://sram.stegosaurus-panga.ts.net/callback';
+  const redirectUri = 'https://storiesuiextraction.pods.portals.tapis.io/callback';
   
   // Guardamos el origen actual (ej: http://localhost:8080) en el navegador del usuario
   // Esto sobrevive aunque el usuario navegue a páginas externas como TACC
