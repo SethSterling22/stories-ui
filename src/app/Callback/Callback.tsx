@@ -22,7 +22,7 @@ const Callback: React.FC = () => {
     if (token) {
       console.log("Token extraído con éxito.");
 
-      // CASO A: Venimos de localhost pero TACC nos regresó al Pod de producción
+      // CASO A: Venimos de localhost pero TACC nos regresó al entorno de producción
       if (savedOrigin && savedOrigin !== currentOrigin) {
         console.log(`Redirigiendo al entorno local de desarrollo: ${savedOrigin}`);
         sessionStorage.removeItem('oauth_original_origin');
@@ -34,23 +34,23 @@ const Callback: React.FC = () => {
 
       // CASO B: Ya estamos en el entorno correcto (Local o Producción)
       try {
-        // Guardamos en LocalStorage.
-        localStorage.setItem('tapis-token', token);
-        localStorage.setItem('token', token);
+        // CLAVE DEL ÉXITO: Guardamos exactamente en la llave que tu AuthProvider busca
+        localStorage.setItem('access_token', token);
 
-        console.log("¡Token guardado con éxito! Hemos congelado la redirección para que revises.");
+        console.log("Sesión guardada en LocalStorage. Redirigiendo al Home...");
         
         // Limpiamos la bandera del origen de sesión
         sessionStorage.removeItem('oauth_original_origin');
 
-        // COMENTAMOS EL REDIRECCIONAMIENTO AUTOMÁTICO PARA DEBUGGEAR
-        // setTimeout(() => { window.location.href = '/'; }, 300);
+        // Redireccionamos a la raíz para refrescar el estado global de la app
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 300);
 
       } catch (error: any) {
         console.error("Error al guardar las credenciales:", error);
         setErrorLog(`Error al guardar en almacenamiento local: ${error.message || error}`);
       }
-
     } else {
       console.error("No se encontró el parámetro access_token en la URL:", url);
       setErrorLog("La respuesta de TACC no contenía un token válido. Revisa los logs de la consola.");
@@ -86,4 +86,3 @@ const Callback: React.FC = () => {
 };
 
 export default Callback;
-
