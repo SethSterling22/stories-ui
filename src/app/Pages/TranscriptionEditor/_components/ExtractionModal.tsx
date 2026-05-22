@@ -44,9 +44,15 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  /* /////////// Logic to call for Location Extraction /////////// */
+ /* /////////// Logic to call for Location Extraction /////////// */
   const extractLocations = async () => {
     if (!segment || !segment.text) return;
+
+    // 🚨 ESCUDO ANTICRASH: Verifica si la URL de n8n existe antes de disparar el fetch
+    if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL === 'undefined' || N8N_WEBHOOK_URL.trim() === '') {
+      setError("Falta la configuración del Webhook. La variable de entorno VITE_N8N_WEBHOOK_URL está vacía o no fue inyectada.");
+      return;
+    }
 
     // 🛑 REFUERZO: Verifica que la variable existe Y que no es una cadena vacía.
     if (!access_token || access_token.trim() === '') {
@@ -63,10 +69,8 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Send Access Token
           'Authorization': `Bearer ${access_token}`, 
         },
-        // Send segment text
         body: JSON.stringify({ 
           texto: segment.text.trim()
         }),

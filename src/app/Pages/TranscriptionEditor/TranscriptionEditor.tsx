@@ -25,6 +25,7 @@ const TranscriptionEditor: React.FC = () => {
   const [resource, setResource] = useState<Resource | null | undefined>(
     undefined,
   );
+  
 
   useEffect(() => {
     const resource = resources.find((r) => r.id === resourceId);
