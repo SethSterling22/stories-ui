@@ -48,13 +48,13 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
   const extractLocations = async () => {
     if (!segment || !segment.text) return;
 
-    // 🚨 ESCUDO ANTICRASH: Verifica si la URL de n8n existe antes de disparar el fetch
+    // Verify Webhook URL
     if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL === 'undefined' || N8N_WEBHOOK_URL.trim() === '') {
-      setError("Falta la configuración del Webhook. La variable de entorno VITE_N8N_WEBHOOK_URL está vacía o no fue inyectada.");
+      setError("The Webhook configuration is missing. The environment variable VITE_N8N_WEBHOOK_URL is empty or was not injected.");
       return;
     }
 
-    // 🛑 REFUERZO: Verifica que la variable existe Y que no es una cadena vacía.
+    // Check if exist or if empty
     if (!access_token || access_token.trim() === '') {
       setError("Authorization token is missing or empty. Cannot contact n8n.");
       setIsLoading(false);
@@ -77,16 +77,11 @@ const ExtractionModal: React.FC<AnnotationModalProps> = ({
       });
 
       if (!response.ok) {
-        // Mejorar la gestión de errores HTTP:
-        // Intentar leer el cuerpo como JSON primero (si n8n devuelve un error 401/500 estructurado)
-        // y si falla, usar el texto plano.
         let errorMessage = `HTTP Error ${response.status}: `;
         try {
             const errorJson = await response.json();
-            // Asumimos que el error JSON tiene un campo 'message' o 'error'
             errorMessage += errorJson.error || errorJson.message || 'Server returned an unhandled error.';
         } catch {
-            // Si falla el parseo de JSON (cuerpo vacío o HTML/texto), usamos el texto crudo.
             const errorText = await response.text();
             errorMessage += errorText.substring(0, 100) + '...';
         }

@@ -41,13 +41,12 @@ const Callback: React.FC = () => {
             setShowUi(true);
         }
         } else {
+
         // If there is no token present, it indicates a configuration mismatch
         setErrorLog("The TACC OAuth response did not contain a valid access token.");
         setShowUi(true);
         }
 
-        // ANTI-FLASH STRATEGY: If redirection takes longer than 150ms for any reason,
-        // we smoothly fade in the loading UI so the application doesn't look frozen.
         const uiTimeout = setTimeout(() => {
         setShowUi(true);
         }, 150);

@@ -112,10 +112,10 @@ import { getTaccOauthUrl } from '../../utils/auth';
 
 const Login: React.FC = () => {
   const handleLoginClick = () => {
-    // Obtenemos la URL base de Tapis desde las variables de entorno
+    // Get Base Tapis URL
     const basePath = import.meta.env.VITE_TAPIS_API_BASE_URL || 'https://portals.tapis.io';
     
-    // Redirigimos al portal de login de TACC
+    // Redirect to Tapis Login
     window.location.href = getTaccOauthUrl(basePath);
   };
 
@@ -123,7 +123,7 @@ const Login: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="p-8 bg-white rounded-xl shadow-lg text-center max-w-md w-full">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Stories UI</h2>
-        <p className="text-sm text-gray-600 mb-8">Authenticator for stories-ui with AI Agent</p>
+        <p className="text-sm text-gray-600 mb-8">Authenticator for Stories-UI</p>
         
         <button
           onClick={handleLoginClick}

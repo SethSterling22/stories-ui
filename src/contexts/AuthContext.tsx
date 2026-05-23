@@ -35,8 +35,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('access_token');
       if (token) {
         try {
-          // You might want to add an API call here to validate the token
-          // For now, we'll just check if it exists
           setAccessToken(token);
           setIsAuthenticated(true);
         } catch (error) {
@@ -76,6 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (err instanceof Error) {
         errorMessage = err.message;
       } else if (typeof err === 'object' && err !== null) {
+
         // Try to extract error message from API response
         interface ApiError {
           body?: {
